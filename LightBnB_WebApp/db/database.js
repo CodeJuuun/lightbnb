@@ -232,9 +232,9 @@ RETURNING *;
       return res.rows[0];
     })
     .catch((err) => {
-      console.log("Error trying to add new property", err.message)
-      return Promise.reject(err)
-    })
+      console.log("Error trying to add new property", err.message);
+      return Promise.reject(err);
+    });
 };
 
 module.exports = {
