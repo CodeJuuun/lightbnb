@@ -27,7 +27,7 @@ const getUserWithEmail = function(email) {
   return pool
     .query(`SELECT * FROM users WHERE email = $1;`, [email.toLowerCase()])
     .then((res) => {
-      res.rows[0] || null;
+      return res.rows[0] || null;
     })
     .catch((err) => {
       console.error('Error fetching user email:', err);
@@ -53,7 +53,7 @@ const getUserWithId = function(id) {
   return pool
     .query(`SELECT * FROM users WHERE id = $1;`, [id])
     .then((res) => {
-      res.rows[0] || null;
+      return res.rows[0] || null;
     })
     .catch((err) => {
       console.error("Error fetching user by id:", err);
@@ -75,7 +75,7 @@ const addUser = function(user) {
   return pool
     .query(`INSERT INTO users(name, email, password) VALUES ($1, $2, $3) RETURNING *;`, [user.name, user.email, user.password])
     .then((res) => {
-      res.rows[0];
+      return res.rows[0];
     })
     .catch((err) => {
       console.error(`There was an error adding user:`, err);
