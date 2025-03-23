@@ -64,30 +64,30 @@ class Employee {
 
 const ada = new Employee("Ada", "CEO", 3000000.00);
 
-const craig    = new Employee("Craig", "VP Software", 1000000);
+const craig = new Employee("Craig", "VP Software", 1000000);
 const arvinder = new Employee("Arvinder", "Chief Design Officer", 1000000);
-const angela   = new Employee("Angela", "VP Retail", 1000000);
-const phil     = new Employee("Phil", "employee", 600000);
-const simone   = new Employee("Simone", "employee", 600000);
-const ali      = new Employee("Ali", "employee", 600000);
-const florida  = new Employee("Florida", "employee", 600000);
-const david    = new Employee("David", "employee", 600000);
-const brian    = new Employee("Brian", "employee", 600000);
-const karla    = new Employee("Karla", "employee", 600000);
+const angela = new Employee("Angela", "VP Retail", 1000000);
+const phil = new Employee("Phil", "employee", 600000);
+const simone = new Employee("Simone", "employee", 600000);
+const ali = new Employee("Ali", "employee", 600000);
+const florida = new Employee("Florida", "employee", 600000);
+const david = new Employee("David", "employee", 600000);
+const brian = new Employee("Brian", "employee", 600000);
+const karla = new Employee("Karla", "employee", 600000);
 
 ada.addSubordinate(craig);
 ada.addSubordinate(arvinder);
 ada.addSubordinate(angela);
 ada.addSubordinate(phil);
 
-craig.addSubordinate(simone)
-craig.addSubordinate(ali)
+craig.addSubordinate(simone);
+craig.addSubordinate(ali);
 
-phil.addSubordinate(florida)
-phil.addSubordinate(david)
-phil.addSubordinate(brian)
+phil.addSubordinate(florida);
+phil.addSubordinate(david);
+phil.addSubordinate(brian);
 
-angela.addSubordinate(karla)
+angela.addSubordinate(karla);
 
 // let wealthyEmployees = console.log(ada.employeesThatMakeOver(418401));
 // console.log(ada.totalEmployees)
