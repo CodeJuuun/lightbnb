@@ -17,7 +17,7 @@ pool.query(`SELECT title FROM properties LIMIT 10;`).then(response => {
 });
 
 /// Users
-
+//-----------------------------------------------------------------------------
 /**
  * Get a single user from the database given their email.
  * @param {String} email The email of the user.
@@ -43,7 +43,7 @@ const getUserWithEmail = function(email) {
 //   }
 // }
 // return Promise.resolve(resolvedUser);
-
+//-----------------------------------------------------------------------------
 /**
  * Get a single user from the database given their id.
  * @param {string} id The id of the user.
@@ -65,7 +65,7 @@ const getUserWithId = function(id) {
 // Original code
 // return Promise.resolve(users[id]);
 
-
+//-----------------------------------------------------------------------------
 /**
  * Add a new user to the database.
  * @param {{name: string, password: string, email: string}} user
@@ -91,7 +91,7 @@ const addUser = function(user) {
 // users[userId] = user;
 // return Promise.resolve(user);
 
-
+//-----------------------------------------------------------------------------
 /// Reservations
 
 /**
@@ -118,7 +118,7 @@ const getAllReservations = function(guest_id, limit = 10) {
       return [];
     });
 };
-
+//-----------------------------------------------------------------------------
 /// Properties
 
 /**
@@ -127,18 +127,77 @@ const getAllReservations = function(guest_id, limit = 10) {
  * @param {*} limit The number of results to return.
  * @return {Promise<[{}]>}  A promise to the properties.
  */
-const getAllProperties = (options, limit = 10) => {
-  return pool
-    .query(`SELECT * FROM properties LIMIT $1`, [limit])
-    .then((result) => {
-      // console.log(result.rows);  //logs details about each place
-      return result.rows;
+const getAllProperties = function(options, limit = 10) {
+  // 1
+  const queryParams = [];
+  const whereClauses = [];
+  // 2
+  let queryString = `
+  SELECT properties.*, avg(property_reviews.rating) AS average_rating
+  FROM properties
+  LEFT JOIN property_reviews ON properties.id = property_reviews.property_id
+  `;
+
+  // 3
+  if (options.city) {
+    queryParams.push(`%${options.city}%`);
+    whereClauses.push(`city LIKE $${queryParams.length}`);
+  }
+
+  // if owner_id is passed in, will only return properties belonging to that owner
+  if (options.owner_id) {
+    queryParams.push(options.owner_id);
+    whereClauses.push(`owner_id = $${queryParams.length}`);
+  }
+
+  // filtering by min and max price if it's provided
+  if (options.minimum_price_per_night) {
+    queryParams.push(options.minimum_price_per_night * 100);
+    whereClauses.push(`cost_per_night >= $${queryParams.length}`);
+  }
+
+  if (options.maximum_price_per_night) {
+    queryParams.push(options.maximum_price_per_night * 100);
+    whereClauses.push(`cost_per_night <= $${queryParams.length}`);
+  }
+
+  // adds the where clause if any filters exist
+  if (whereClauses.length > 0) {
+    queryString += ` WHERE ${whereClauses.join(' AND ')}`;
+  }
+
+  // group and order results
+  queryString += ` GROUP BY properties.id`;
+
+
+  // filtering by min rating if passed in and returns properties with an avg rating equal to or higher than that
+
+  if (options.minimum_rating) {
+    queryParams.push(options.minimum_rating);
+    queryString += ` HAVING avg(property_reviews.rating) >= $${queryParams.length}`;
+  }
+
+  // 4
+  queryParams.push(limit);
+  queryString += `
+  ORDER BY cost_per_night
+  LIMIT $${queryParams.length};
+  `;
+
+  // debugging code (REMOVE LATER)
+  console.log(queryString, queryParams);
+
+  // 6
+  return pool.query(queryString, queryParams)
+    .then((res) => {
+      return res.rows;
     })
     .catch((err) => {
       console.log(err.message);
-    });
+      return Promise.reject(err)
+    }) 
 };
-
+//-----------------------------------------------------------------------------
 /**
  * Add a property to the database
  * @param {{}} property An object containing all of the property details.
